@@ -1,0 +1,24 @@
+{
+  "name": "Bloem & Co Inventory",
+  "short_name": "Bloem & Co",
+  "description": "Flower shop inventory for Bloem & Co staff.",
+  "start_url": "/inventory",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FDF4F7",
+  "theme_color": "#C2457A",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

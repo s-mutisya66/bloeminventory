@@ -28,21 +28,13 @@ bloem-co/
 
 How it works: staff sign in with one shared shop login. The password is checked on the server and a signed, HttpOnly cookie keeps them signed in for 8 hours. The inventory page and the stock data are only returned to signed-in staff. Stock lives in a Neon Postgres database, so every phone and computer shows the same numbers, and two people selling at once cannot push stock below zero. The tables are created automatically the first time the app loads, and the demo stock is added once.
 
-## Step 1: create the free Neon database
+## Step 1: create the free Neon database and copy its connection string
 
-Pick one way.
-
-**Way 1: from inside Vercel (connects itself)**
-1. Deploy the project first (see Step 3, Option A steps 1 to 5, or Option B steps 1 to 4), without worrying about the settings yet.
-2. In the Vercel dashboard open your project and go to the **Storage** tab (it may also be called Integrations or Marketplace).
-3. Choose **Neon**, then **Create** (or **Connect**) and accept the **Free** plan.
-4. Connect it to the `bloem-co` project for all environments. Vercel adds a `DATABASE_URL` setting for you.
-
-**Way 2: from neon.com**
-1. Sign up at https://neon.com (the Free plan needs no payment).
-2. Click **New project**. Name it `bloem-co` and choose the region closest to you.
-3. On the project dashboard click **Connect**, make sure the connection string is shown, and copy it. It starts with `postgresql://` and ends with `sslmode=require`.
-4. You will paste it into Vercel as `DATABASE_URL` in Step 2.
+1. Go to https://neon.com and sign up (the Free plan needs no payment).
+2. Click **New project**. Name it `bloem-co`, keep the default Postgres version, and choose the region closest to you.
+3. When the project opens, click **Connect** at the top of the dashboard.
+4. Leave the database and role as the defaults, and copy the connection string. It looks like `postgresql://user:password@host/neondb?sslmode=require`. If the password is hidden, use the show or copy button so the copy includes the real password.
+5. Keep that string private. Anyone who has it can read and change your data, so do not post it in a chat, an email or GitHub. You will paste it into Vercel in Step 2.
 
 Free plan limits to know: 1 GB of storage per project, 100 compute hours a month, and the database sleeps after 5 minutes without use (the first request after a quiet spell is a little slower). Plans change, so see https://neon.com/pricing.
 
@@ -55,7 +47,7 @@ Open `.env.example`. You need four settings in Vercel (Project, Settings, Enviro
 | `SHOP_USER` | The username staff type, for example `owner` |
 | `SHOP_PASSWORD` | A long, unique password |
 | `SESSION_SECRET` | A random string of 32 or more characters |
-| `DATABASE_URL` | The Neon connection string (added for you by Way 1) |
+| `DATABASE_URL` | The Neon connection string you copied in Step 1 |
 
 To make the `SESSION_SECRET`, run either of these and copy the result:
 
@@ -89,7 +81,7 @@ Never put these values in a file you commit to GitHub.
    vercel env add SESSION_SECRET production
    vercel env add DATABASE_URL production
    ```
-   Skip the last line if you used Way 1 in Step 1.
+   Paste the Neon connection string when it asks for the `DATABASE_URL` value.
 7. Publish with the settings applied:
    `vercel --prod`
 8. Open the address it prints, sign in, and the inventory loads from your database.
@@ -108,10 +100,10 @@ Never put these values in a file you commit to GitHub.
    ```
 3. Go to https://vercel.com/new and click **Import** next to `bloem-co`.
 4. On the configure screen set Framework Preset to **Other**, leave the Build, Output and Install commands empty (`vercel.json` already sets the output folder), and keep the root as `./`.
-5. Open **Environment Variables** on the same screen and add `SHOP_USER`, `SHOP_PASSWORD`, `SESSION_SECRET` and (if you used Way 2) `DATABASE_URL`. Leave all environments ticked.
+5. Open **Environment Variables** on the same screen and add `SHOP_USER`, `SHOP_PASSWORD`, `SESSION_SECRET` and `DATABASE_URL`. Leave all environments ticked.
 6. Click **Deploy**, then open the live address and sign in.
 
-If you add or change settings after a deploy (including connecting the database with Way 1), open **Deployments**, use the three-dot menu on the latest one and choose **Redeploy**. Settings only apply to new deployments.
+If you add or change settings after a deploy, open **Deployments**, use the three-dot menu on the latest one and choose **Redeploy**. Settings only apply to new deployments.
 
 ## Day to day
 
