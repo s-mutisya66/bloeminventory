@@ -1,0 +1,12 @@
+{
+  "name": "bloem-co-inventory",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bloem & Co flower shop inventory with staff sign-in, hosted on Vercel with a Neon Postgres database.",
+  "engines": {
+    "node": "22.x"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.0"
+  }
+}

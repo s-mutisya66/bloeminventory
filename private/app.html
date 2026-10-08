@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Bloem &amp; Co Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="top-title">
+      <p class="eyebrow" id="today">Inventory</p>
+      <h1>Bloem &amp; Co</h1>
+    </div>
+    <div class="top-actions">
+      <span class="demo-tag" id="syncTag" role="status">Syncing…</span>
+      <button type="button" class="btn" id="resetBtn">Reset to demo data</button>
+      <button type="button" class="btn btn-primary" id="addBtn">Add item</button>
+      <button type="button" class="btn" id="signOutBtn">Sign out</button>
+    </div>
+  </header>
+
+  <section class="stats" id="stats" aria-label="Summary"></section>
+
+  <div class="main">
+    <section class="panel" aria-labelledby="stockTitle">
+      <div class="panel-head">
+        <h2 id="stockTitle">Stock</h2>
+        <span class="count" id="rowCount"></span>
+      </div>
+      <div class="toolbar">
+        <input class="input search" id="search" type="search" placeholder="Search by item name" aria-label="Search items" autocomplete="off">
+        <select class="select" id="catFilter" aria-label="Filter by category">
+          <option value="all">All categories</option>
+          <option>Cut flowers</option>
+          <option>Foliage</option>
+          <option>Potted</option>
+          <option>Supplies</option>
+        </select>
+        <select class="select" id="viewFilter" aria-label="Filter by status">
+          <option value="all">All items</option>
+          <option value="reorder">Needs reorder</option>
+          <option value="usefirst">Use first</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"><button type="button" class="sort" data-key="name">Item</button></th>
+              <th scope="col"><button type="button" class="sort" data-key="stock">In stock</button></th>
+              <th scope="col">Status</th>
+              <th scope="col"><button type="button" class="sort" data-key="fresh">Freshness</button></th>
+              <th scope="col">Price</th>
+              <th scope="col"><span class="sr">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="empty" hidden></div>
+    </section>
+
+    <aside class="rail">
+      <section class="panel" aria-labelledby="reorderTitle">
+        <div class="panel-head">
+          <h2 id="reorderTitle">To reorder</h2>
+          <span class="count" id="reorderCount"></span>
+        </div>
+        <div id="reorderBody"></div>
+      </section>
+      <section class="panel" aria-labelledby="logTitle">
+        <div class="panel-head">
+          <h2 id="logTitle">Recent activity</h2>
+        </div>
+        <ul class="list log" id="logList"></ul>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <h2 id="modalTitle"></h2>
+      <button type="button" class="icon-btn" id="modalClose" aria-label="Close">&times;</button>
+    </div>
+    <form id="modalForm" novalidate></form>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>

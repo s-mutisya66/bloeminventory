@@ -1,70 +1,137 @@
-# Bloem & Co Inventory: deploy to Vercel
+# Bloem & Co Inventory: deploy to Vercel with sign-in and a Neon database
 
-This is a static site. There is no build step and no server. The folder contains:
+## How the project is laid out
 
-- `index.html` the page
-- `styles.css` all colours, fonts and layout
-- `app.js` all the inventory logic
-- `vercel.json` optional Vercel settings
+```
+bloem-co/
+  public/            what anyone on the internet can open
+    index.html       sign-in page
+    login.css
+    login.js
+  private/           never published; only served to signed-in staff
+    app.html         the inventory page
+    styles.css
+    app.js
+  api/               small server functions that run on Vercel
+    login.js         checks the username and password
+    logout.js        ends the session
+    inventory.js     returns the inventory page only if you are signed in
+    state.js         reads stock and activity from the database
+    action.js        sell, restock, add, edit, delete and reset
+    _auth.js         sign-in helpers (not a public URL)
+    _db.js           database helpers (not a public URL)
+  package.json       lists the Neon database driver
+  vercel.json        tells Vercel to publish only /public
+  .env.example       the four settings you must add in Vercel
+  .gitignore
+```
 
-Inventory changes are saved in the visitor's own browser (localStorage). This is a demo, so nothing is shared between devices.
+How it works: staff sign in with one shared shop login. The password is checked on the server and a signed, HttpOnly cookie keeps them signed in for 8 hours. The inventory page and the stock data are only returned to signed-in staff. Stock lives in a Neon Postgres database, so every phone and computer shows the same numbers, and two people selling at once cannot push stock below zero. The tables are created automatically the first time the app loads, and the demo stock is added once.
 
-## Option A: Vercel CLI (fastest)
+## Step 1: create the free Neon database
 
-1. Install Node.js (version 18 or newer) from https://nodejs.org if you do not have it.
-2. Open a terminal in the `bloem-co` folder.
-3. Install the Vercel CLI:
-   `npm install -g vercel`
-4. Log in:
-   `vercel login`
-   Follow the prompt (email link or GitHub).
-5. Create a preview deployment:
+Pick one way.
+
+**Way 1: from inside Vercel (connects itself)**
+1. Deploy the project first (see Step 3, Option A steps 1 to 5, or Option B steps 1 to 4), without worrying about the settings yet.
+2. In the Vercel dashboard open your project and go to the **Storage** tab (it may also be called Integrations or Marketplace).
+3. Choose **Neon**, then **Create** (or **Connect**) and accept the **Free** plan.
+4. Connect it to the `bloem-co` project for all environments. Vercel adds a `DATABASE_URL` setting for you.
+
+**Way 2: from neon.com**
+1. Sign up at https://neon.com (the Free plan needs no payment).
+2. Click **New project**. Name it `bloem-co` and choose the region closest to you.
+3. On the project dashboard click **Connect**, make sure the connection string is shown, and copy it. It starts with `postgresql://` and ends with `sslmode=require`.
+4. You will paste it into Vercel as `DATABASE_URL` in Step 2.
+
+Free plan limits to know: 1 GB of storage per project, 100 compute hours a month, and the database sleeps after 5 minutes without use (the first request after a quiet spell is a little slower). Plans change, so see https://neon.com/pricing.
+
+## Step 2: choose your settings
+
+Open `.env.example`. You need four settings in Vercel (Project, Settings, Environment Variables):
+
+| Name | What to put |
+| --- | --- |
+| `SHOP_USER` | The username staff type, for example `owner` |
+| `SHOP_PASSWORD` | A long, unique password |
+| `SESSION_SECRET` | A random string of 32 or more characters |
+| `DATABASE_URL` | The Neon connection string (added for you by Way 1) |
+
+To make the `SESSION_SECRET`, run either of these and copy the result:
+
+```
+openssl rand -hex 32
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+Never put these values in a file you commit to GitHub.
+
+## Step 3: deploy
+
+### Option A: Vercel CLI
+
+1. Install Node.js 22 or newer from https://nodejs.org.
+2. Unzip the project and open a terminal in the `bloem-co` folder.
+3. Install the CLI: `npm install -g vercel`
+4. Log in: `vercel login`
+5. Create the project:
    `vercel`
-   Answer the prompts:
    - Set up and deploy? `Y`
    - Which scope? choose your account
    - Link to existing project? `N`
-   - Project name? `bloem-co` (or any name)
-   - In which directory is your code located? press Enter (`./`)
-   - If it offers to override settings, answer `N`
-6. Vercel prints a preview URL. Open it and check the site.
-7. Publish to production:
+   - Project name? `bloem-co`
+   - In which directory is your code located? press Enter
+   - Override settings? `N`
+6. Add the settings to production. Each command asks you to type the value:
+   ```
+   vercel env add SHOP_USER production
+   vercel env add SHOP_PASSWORD production
+   vercel env add SESSION_SECRET production
+   vercel env add DATABASE_URL production
+   ```
+   Skip the last line if you used Way 1 in Step 1.
+7. Publish with the settings applied:
    `vercel --prod`
-   Vercel prints your live address, for example `https://bloem-co.vercel.app`.
+8. Open the address it prints, sign in, and the inventory loads from your database.
 
-To update later, edit the files and run `vercel --prod` again.
+### Option B: GitHub and the Vercel dashboard
 
-## Option B: GitHub + Vercel dashboard (auto-deploys on every change)
-
-1. Create a new empty repository on https://github.com (for example `bloem-co`).
-2. In a terminal inside the `bloem-co` folder, run:
+1. Create an empty repository on https://github.com named `bloem-co`.
+2. In a terminal inside the `bloem-co` folder run:
    ```
    git init
    git add .
-   git commit -m "Bloem & Co inventory demo"
+   git commit -m "Bloem & Co inventory"
    git branch -M main
    git remote add origin https://github.com/YOUR-USERNAME/bloem-co.git
    git push -u origin main
    ```
-3. Go to https://vercel.com/new and sign in.
-4. Click **Import** next to the `bloem-co` repository (connect GitHub first if asked).
-5. On the configure screen set:
-   - Framework Preset: **Other**
-   - Root Directory: `./`
-   - Build Command: leave empty
-   - Output Directory: leave empty
-   - Install Command: leave empty
-6. Click **Deploy**. After about a minute Vercel shows your live URL.
-7. Every `git push` to `main` now redeploys the site automatically.
+3. Go to https://vercel.com/new and click **Import** next to `bloem-co`.
+4. On the configure screen set Framework Preset to **Other**, leave the Build, Output and Install commands empty (`vercel.json` already sets the output folder), and keep the root as `./`.
+5. Open **Environment Variables** on the same screen and add `SHOP_USER`, `SHOP_PASSWORD`, `SESSION_SECRET` and (if you used Way 2) `DATABASE_URL`. Leave all environments ticked.
+6. Click **Deploy**, then open the live address and sign in.
 
-## Add your own domain (optional)
+If you add or change settings after a deploy (including connecting the database with Way 1), open **Deployments**, use the three-dot menu on the latest one and choose **Redeploy**. Settings only apply to new deployments.
 
-1. In the Vercel dashboard open the project, then **Settings**, then **Domains**.
-2. Enter your domain and click **Add**.
-3. Add the DNS records Vercel shows at your domain registrar. Vercel issues the HTTPS certificate for you.
+## Day to day
+
+- Change the password: edit `SHOP_PASSWORD` in Environment Variables and redeploy. To sign everyone out at once, change `SESSION_SECRET` and redeploy.
+- Staff sign out with the **Sign out** button.
+- The page refreshes itself every minute and whenever the tab comes back into view. The chip at the top shows when it last synced, or "Offline" if it cannot reach the server.
+- Start with your own stock: open each demo item with **Edit** and use **Delete item**, then add your real items. The **Reset to demo data** button erases everything and reloads the demo stock, so do not press it once you are using real numbers.
+- Update the site: edit the files and run `vercel --prod`, or `git push` if you used Option B.
+
+## Good to know
+
+- This is one shared shop login, not individual accounts.
+- To slow down automated password guessing, turn on Vercel's Attack Challenge Mode or add a rate-limit rule under the project's **Firewall** tab.
+- Your data lives in your Neon project. Neon keeps a short restore window on the Free plan; export anything important from the Neon dashboard if you need a longer record.
 
 ## Troubleshooting
 
-- Page shows unstyled text: check that `styles.css` and `app.js` sit in the same folder as `index.html`.
-- 404 on the live site: the Root Directory must be the folder that contains `index.html`.
-- Data looks reset: browser data is per device and per browser. Clearing site data or using a private window starts from the demo data again.
+- "Sign-in is not set up yet": one of `SHOP_USER`, `SHOP_PASSWORD` or `SESSION_SECRET` is missing, or the secret is under 16 characters. Add it, then redeploy.
+- "The database is not connected yet": `DATABASE_URL` is missing. Add it, then redeploy.
+- "Could not reach the database": the Neon connection string is wrong or the project was deleted. Copy a fresh connection string from the Neon dashboard.
+- The page says Offline: check your internet connection. The chip returns to Synced after the next successful refresh.
+- 404 on the live site: the project root must be the folder that contains `public`, `api` and `vercel.json`.
+- Signed in but sent straight back to the sign-in page: the browser is blocking cookies for the site, or `SESSION_SECRET` was changed after you signed in. Sign in again.
