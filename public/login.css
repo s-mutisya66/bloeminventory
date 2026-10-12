@@ -1,14 +1,14 @@
 /* Bloem & Co sign-in
-   Layout: split screen. Rose brand panel on the left, white form on the right; stacks on phones. */
+   Layout: split screen. Black brand panel on the left, white form on the right; stacks on phones. */
 :root {
-  --bg: #FDF4F7;
+  --bg: #FAFAFA;
   --surface: #FFFFFF;
-  --ink: #3B2030;
-  --muted: #7D6571;
-  --line: #E9CFDA;
-  --accent: #C2457A;
+  --ink: #0F0F0F;
+  --muted: #666666;
+  --line: #DADADA;
+  --accent: #0F0F0F;
   --accent-ink: #FFFFFF;
-  --accent-soft: #FCE6EE;
+  --accent-soft: #EFEFEF;
   --crit: #A61B1B;
   --font-display: 'Cormorant Garamond', 'Cormorant', Georgia, 'Times New Roman', serif;
   --font-body: 'Jost', 'Helvetica Neue', Arial, system-ui, sans-serif;
@@ -16,14 +16,14 @@
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #1C1117; --surface: #271821; --ink: #F8EAF0; --muted: #BFA3B0; --line: #43303B;
-    --accent: #F28DB5; --accent-ink: #3A0F22; --accent-soft: #4A2335; --crit: #FF8A80;
+    --bg: #0B0B0B; --surface: #151515; --ink: #F2F2F2; --muted: #A0A0A0; --line: #2B2B2B;
+    --accent: #F2F2F2; --accent-ink: #0B0B0B; --accent-soft: #232323; --crit: #FF8A80;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #1C1117; --surface: #271821; --ink: #F8EAF0; --muted: #BFA3B0; --line: #43303B;
-  --accent: #F28DB5; --accent-ink: #3A0F22; --accent-soft: #4A2335; --crit: #FF8A80;
+  --bg: #0B0B0B; --surface: #151515; --ink: #F2F2F2; --muted: #A0A0A0; --line: #2B2B2B;
+  --accent: #F2F2F2; --accent-ink: #0B0B0B; --accent-soft: #232323; --crit: #FF8A80;
   color-scheme: dark;
 }
 
@@ -51,7 +51,7 @@ button, input { font: inherit; color: inherit; }
   padding: 48px max(24px, 6vw);
 }
 .eyebrow { margin: 0; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500; opacity: 0.9; }
-.brand h1 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(3rem, 7vw, 5rem); line-height: 1; letter-spacing: 0.01em; }
+.brand h1 { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: clamp(3rem, 7vw, 5rem); line-height: 1; letter-spacing: 0.04em; }
 .tagline { margin: 8px 0 0; font-family: var(--font-display); font-size: 1.5rem; line-height: 1.25; max-width: 22ch; opacity: 0.95; }
 @media (max-width: 760px) { .brand { padding: 32px 24px; } .brand h1 { font-size: 3rem; } .tagline { font-size: 1.25rem; } }
 

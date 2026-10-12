@@ -5,8 +5,8 @@
   "start_url": "/inventory",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#FDF4F7",
-  "theme_color": "#C2457A",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0F0F0F",
   "icons": [
     {
       "src": "/icon-192.png",
