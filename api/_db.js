@@ -10,9 +10,19 @@ class HttpError extends Error {
 let client = null;
 let schemaPromise = null;
 
+// Accepts the connection string as pasted: surrounding quotes, spaces, a leading "psql" command
+// or a leading DATABASE_URL= are all removed.
+function cleanConnectionString(raw) {
+  let s = String(raw || '').trim();
+  s = s.replace(/^psql\s+/i, '').replace(/^DATABASE_URL\s*=\s*/i, '').trim();
+  s = s.replace(/^['"]+/, '').replace(/['"]+$/, '').trim();
+  return s;
+}
+
 function getSql() {
-  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  const url = cleanConnectionString(process.env.DATABASE_URL || process.env.POSTGRES_URL);
   if (!url) throw new HttpError(500, 'The database is not connected yet. Add DATABASE_URL in your Vercel project settings, then redeploy.');
+  if (!/^postgres(ql)?:\/\//i.test(url)) throw new HttpError(500, 'DATABASE_URL is not a Postgres connection string. It should start with postgresql:// and be copied from the Neon Connect dialog.');
   if (!client) client = neon(url);
   return client;
 }

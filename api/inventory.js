@@ -4,7 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const auth = require('./_auth');
 
-const PRIVATE = path.join(__dirname, '..', 'private');
+// Look for the private folder next to /api first, then in the working directory. Either one works on Vercel.
+const CANDIDATES = [path.join(__dirname, '..', 'private'), path.join(process.cwd(), 'private')];
+const PRIVATE = CANDIDATES.find(function (d) { return fs.existsSync(path.join(d, 'app.html')); }) || CANDIDATES[0];
 
 module.exports = function handler(req, res) {
   res.setHeader('Cache-Control', 'private, no-store');
